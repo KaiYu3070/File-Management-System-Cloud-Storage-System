@@ -140,17 +140,3 @@ If you'd like to contribute to the project, feel free to fork the repository and
 ## Contact
 
 If you have any questions or feedback, feel free to reach out to me at [lapjhon4@gmail.com].
-```
-
-### Key Updates:
-1. **Supported Formats and Resolutions**:
-   - Added detailed information about supported video formats (MP4 and WebM) and resolutions (144p to 4K).
-2. **Video Download Workflow**:
-   - Clarified how users can choose video quality (resolution and format) before downloading.
-3. **Screenshots**:
-   - Placeholder for screenshots showing the dashboard, file upload, and YouTube video download interface.
-4. **Technologies Used**:
-   - Included `yt-dlp` for downloading videos from YouTube, which supports various formats and resolutions.
-
-### Action:
-- Replace `path_to_your_screenshot_1.png`, `path_to_your_screenshot_2.png`, and `path_to_your_screenshot_3.png` with the actual file paths to your screenshots.
