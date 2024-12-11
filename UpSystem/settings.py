@@ -52,7 +52,7 @@ MIDDLEWARE = [
     # 'django.middleware.clickjacking.XFrameOptionsMiddleware',
     'middlewares.Md1.Md1'
 ]
-ALLOWED_HOSTS = ['104.238.131.158','104.238.131.158:8020','127.0.0.1']
+ALLOWED_HOSTS = ['127.0.0.1']
 
 ROOT_URLCONF = 'UpSystem.urls'
 
