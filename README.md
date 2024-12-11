@@ -93,7 +93,7 @@ You can select the video format and resolution before downloading. By default, *
 
 Here are some screenshots of the system in action:
 
-![Dashboard Screenshot](File-Management-System-Cloud-Storage-System/pic/1.png)
+![Image of Project](pics/1.png)
 *Dashboard showing file and folder management interface.*
 
 ![File Upload Screenshot](/pic/2.png)
