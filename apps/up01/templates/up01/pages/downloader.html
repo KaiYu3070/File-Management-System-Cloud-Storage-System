@@ -1,0 +1,437 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>YouTube Downloader</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background-color: #f4f4f4;
+        }
+
+        h1 {
+            text-align: center;
+            color: #333;
+        }
+
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+            background: #fff;
+            padding: 20px;
+            border-radius: 5px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+
+        input[type="text"] {
+            width: 100%;
+            padding: 10px;
+            margin: 10px 0;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+        }
+
+        input[type="file"] {
+            margin: 10px 0;
+        }
+
+        button {
+            padding: 10px;
+            width: 100%;
+            background-color: #28a745;
+            border: none;
+            color: white;
+            font-size: 16px;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background-color: #218838;
+        }
+
+        .progress-container {
+            width: 100%;
+            background: #ddd;
+            border-radius: 4px;
+            margin: 10px 0;
+            height: 30px;
+            position: relative;
+        }
+
+        .progress-bar {
+            height: 100%;
+            width: 0;
+            background: #28a745;
+            border-radius: 4px;
+            transition: width 0.5s;
+        }
+
+        .progress-text {
+            position: absolute;
+            left: 50%;
+            transform: translateX(-50%);
+            color: #fff;
+            font-weight: bold;
+        }
+
+        .eta {
+            text-align: center;
+            margin-top: 10px;
+            color: #555;
+            padding: 5px;
+        }
+        .eta1 {
+            text-align: center;
+            margin-top: 10px;
+            color: #555;
+            padding: 15px;
+        }
+
+        .error-message {
+            color: red;
+            font-weight: bold;
+            text-align: center;
+            margin-top: 10px;
+        }
+
+        .progress-text {
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+  color: #de1010;
+  font-weight: bold;
+  padding: 5px;
+}
+
+       .format-container {
+    margin-top: 20px;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: flex-start;
+    gap: 10px;
+}
+
+.format-option {
+    flex: 1 0 45%;
+    max-width: 48%;
+    margin-bottom: 10px;
+}
+
+.format-radio {
+    display: none;
+}
+
+.format-label {
+    display: flex;
+    align-items: center;
+    background: #f4f4f4;
+    padding: 10px;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+    width: 100%;
+    box-sizing: border-box;
+}
+
+.format-label:hover {
+    background-color: #e9e9e9;
+}
+
+.format-info {
+    font-size: 16px;
+    color: #333;
+    margin-left: 10px;
+}
+
+.format-radio:checked + .format-label {
+    background-color: #28a745;
+    color: white;
+}
+
+.format-radio:checked + .format-label .format-info {
+    font-weight: bold;
+}
+
+#loading-spinner {
+    margin-top: 10px;
+    color: #28a745;
+}
+
+button[disabled] {
+    background-color: #ddd;
+    cursor: not-allowed;
+}
+
+  .select-label {
+        font-size: 16px;
+        font-weight: 600;
+        color: #333;
+        margin-bottom: 10px;
+        display: block;
+    }
+
+    .select-box {
+        width: 100%;
+        padding: 10px;
+        font-size: 16px;
+        color: #333;
+        background-color: #f4f4f4;
+        border: 1px solid #ddd;
+        border-radius: 5px;
+        cursor: pointer;
+        transition: all 0.3s ease;
+    }
+
+    .select-box:focus {
+        outline: none;
+        border-color: #28a745;
+        background-color: #fff;
+    }
+
+    .select-box option {
+        padding: 10px;
+    }
+
+    /* Hover effect for the dropdown */
+    .select-box:hover {
+        background-color: #e9e9e9;
+    }
+
+
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>YouTube Downloader</h1>
+        <input type="text" id="video-url" placeholder="Please enter the youtube video link">
+        <input type="file" id="cookies"   accept=".txt" > （ Upload the YouTube cookie file ）
+        <br>
+   <!-- File folder dropdown -->
+ <select id="folder-select" class="select-box">
+    <option value="" disabled selected>Select Folder</option> <!-- Placeholder option -->
+</select>
+          <br>
+        <button style="  margin-top: 10px;" id="download-btn">Download</button>
+
+        <!-- Loading Spinner -->
+    <div id="loading-spinner" style="display:none; text-align:center;">
+     </div>
+
+          <div class="format-container" id="format-container">
+
+</div>
+
+        <div class="progress-container" id="progress-container">
+            <div class="progress-bar" id="progress-bar"></div>
+            <div class="progress-text" id="progress-text">0%</div>
+        </div>
+       <div class="eta1" id="eta">Remaining Time: Unknown</div>
+       <div class="eta" id="eta2">Video Size: Unknown</div>
+       <div class="eta" id="eta3">Download Speed (per second): Unknown</div>
+
+        <div class="error-message" id="error-message"></div>
+    </div>
+
+    <script>
+        document.getElementById('download-btn').onclick = function() {
+            const url = document.getElementById('video-url').value;
+            const cookies = document.getElementById('cookies').files[0];
+            const formData = new FormData();
+            const formatContainer = document.getElementById("format-container");
+
+
+            formData.append('url', url);
+            if (cookies) {
+                formData.append('cookies', cookies);
+            }
+
+
+
+    const folderSelect = document.getElementById('folder-select');
+    const selectedFolder = folderSelect.value;
+    console.log("folder:",selectedFolder)
+    formData.append('folder', selectedFolder);
+
+
+    if (!selectedFolder) {
+        document.getElementById('error-message').innerText = 'No folder selected. Please select a folder to download.';
+
+
+        return;
+    }
+             if (formatContainer.children.length === 0) {
+
+                   document.getElementById('download-btn').disabled = true;
+                   const loadingSpinner = document.getElementById('loading-spinner');
+                   loadingSpinner.style.display = 'block';
+                   loadingSpinner.innerHTML = '<i class="fa fa-spinner fa-spin" style="font-size: 24px;"></i> Loading...';  // Set loading text
+
+
+                  fetch('/video_formats/', {
+                method: 'POST',
+                body: formData,
+            })
+
+
+            .then(response => response.json())
+            .then(data => {
+
+
+        document.getElementById('download-btn').disabled = false;
+        document.getElementById('loading-spinner').style.display = 'none';
+
+                console.log("log", data.formats);  // Check if formats are returned correctly
+                const formatData = data.formats;
+                formatContainer.innerHTML = "";
+
+                // Create radio buttons dynamically
+                for (let index = 0; index < formatData.length; index++) {
+                    const format = formatData[index];
+
+                    // Create new format option
+                    const formatOption = document.createElement("div");
+                    formatOption.classList.add("format-option");
+
+                    const radioInput = document.createElement("input");
+                    radioInput.type = "radio";
+                    radioInput.id = `format${index + 1}`;
+                    radioInput.name = "format";
+                    radioInput.value = format.format+"."+format.extension;
+                    radioInput.classList.add("format-radio");
+
+                    const label = document.createElement("label");
+                    label.setAttribute("for", radioInput.id);
+                    label.classList.add("format-label");
+
+                    const span = document.createElement("span");
+                    span.classList.add("format-info");
+                    span.textContent = `${format.format} - ${format.filesize} - ${format.extension}`;
+
+                    // Combine label and radio input
+                    label.appendChild(span);
+                    formatOption.appendChild(radioInput);
+                    formatOption.appendChild(label);
+
+                    // Add the format option to the container
+                    formatContainer.appendChild(formatOption);
+                }
+
+            })
+            .catch(error => {
+               document.getElementById('error-message').innerText = 'Network error or cookie file not uploaded. Please try again.';
+
+            });
+                   return;
+          }else {
+
+
+const selectedFormat = document.querySelector('input[name="format"]:checked');
+
+if (selectedFormat) {
+
+    const selectedFormatValue = selectedFormat.value;
+
+    formData.append('format', selectedFormatValue);
+    console.log("Selected Format:", selectedFormatValue);
+
+
+} else {
+    console.log("No format selected.");
+    document.getElementById('error-message').innerText = 'No format selected, please select the video format you want to download.';
+    return;
+}
+
+            fetch('/download_video/', {
+                method: 'POST',
+                body: formData,
+            })
+            .then(response => response.json())
+            .then(data => {
+
+
+                if (data.success) {
+                    startProgressMonitoring();
+                } else {
+                   document.getElementById('error-message').innerText = data.error || 'Download failed, please try again.';
+
+                }
+            })
+            .catch(error => {
+               document.getElementById('error-message').innerText = 'Network error or cookie file not uploaded. Please try again.';
+
+            });
+
+            }
+        };
+
+        function startProgressMonitoring() {
+            const progressBar = document.getElementById('progress-bar');
+            const progressText = document.getElementById('progress-text');
+            const etaText = document.getElementById('eta');
+            const etaText2 = document.getElementById('eta2');
+            const etaText3 = document.getElementById('eta3');
+
+            const errorMessage = document.getElementById('error-message');
+            errorMessage.innerText = ''; // clear error message
+
+            const updateProgress = setInterval(() => {
+                fetch('/download_progress/')
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.complete) {
+                            clearInterval(updateProgress);
+                            progressBar.style.width = '100%';
+                            progressText.innerText = 'Download Complete!';
+                            etaText.innerText = 'Remaining Time: 0 seconds';
+                            etaText2.innerText = 'Video Size: 0';
+                            etaText3.innerText = 'Download Speed (per second): 0';
+
+                        } else {
+                            const percent = parseFloat(data.percent);
+                            const eta = data.eta || 'Unknown';
+                            const eta2 = data.total || 'Unknown';
+                            const eta3 = data.pers || 'Unknown';
+                            progressBar.style.width = percent + '%';
+                            progressText.innerText = percent.toFixed(2) + '%';
+                            etaText.innerText = 'Remaining Time: ' + eta;
+                            etaText2.innerText = 'Video Size: ' + eta2;
+                            etaText3.innerText = 'Download Speed (per second): ' + eta3;
+
+                        }
+                    });
+            }, 1000);
+        }
+
+        // Function to load folders dynamically from the server
+function loadFolders() {
+    fetch('/get_folders/')  // Your endpoint to get folders
+        .then(response => response.json())
+        .then(data => {
+            const folderSelect = document.getElementById('folder-select');
+            folderSelect.innerHTML = '<option value="">Select a folder to download</option>'; // Clear existing options
+
+            data.data.forEach(folder => {
+                const option = document.createElement('option');
+                option.value = folder.baseName;
+                option.textContent = folder.baseName;
+                folderSelect.appendChild(option);
+            });
+        })
+        .catch(error => {
+            console.error('Error fetching folders:', error);
+        });
+}
+
+document.addEventListener('DOMContentLoaded', function() {
+    // Load folders when the page is loaded
+    loadFolders();
+});
+
+    </script>
+</body>
+</html>

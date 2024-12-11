@@ -12,11 +12,23 @@ Class-based views
 Including another URLconf
     1. Import the include() function: from django.urls import include, path
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
+
+
+
+    ffmpeg -ss 00:00:00 -i autum.mp4 -t 00:02:00 -c:v libx264 -preset slow -crf 18 -c:a aac -ar 44100 -b:a 192k output_segment.mp4
+    ffmpeg -ss 00:02:00 -i autum.mp4 -t 00:03:00 -c:v libx264 -preset slow -crf 18 -c:a aac -ar 44100 -b:a 192k output_segment02.mp4
+
+ffmpeg -ss 00:00:00 -i wakxi.mp4 -t 00:03:00 -c:v libx264 -preset slow -crf 18 -an -movflags +faststart -profile:v high10 -pix_fmt yuv420p10le output_k1.mp4
+
+
+ffmpeg -ss 00:00:00 -i wakxi.mp4 -t 00:05:00 -c:v libx264 -preset veryslow -crf 14 -an -movflags +faststart -profile:v high10 -level:v 5.1 -pix_fmt yuv420p10le -tune film -b:v 40M -x264-params "keyint=60:min-keyint=60" -vf "scale=3840:2160" output_k2.mp4
+
 """
 from django.contrib import admin
 from django.urls import path,include,re_path
 from apps.up01 import views
-
+from django.urls import path
+from django.views.generic import TemplateView
 
 urlpatterns = [
 
@@ -30,7 +42,6 @@ urlpatterns = [
     # ))),
 
 
-
                               path('index/', views.index),
                               path('get_client_ip/<str:name>', views.get_client_ip),
                               path('login/<str:username>/<str:password>', views.login),
@@ -40,6 +51,7 @@ urlpatterns = [
                               path('admin/<str:name>', views.admin),
                               path('logout/', views.logout),
                               path('MakeDataP/', views.MakeDataP),
+                              path('MakeDataPP/', views.MakeDataPP),
                               path('findAllDataBases/', views.findAllDataBases),
                               path('MkDataBasesave/', views.MkDataBasesave),
                               path('upload/', views.UploadFile, name='upload_file'),
@@ -54,6 +66,12 @@ urlpatterns = [
                               path('FindAllData/<str:DataName>', views.FindAllData),
                               path('MkDataBaseupdate/', views.MkDataBaseupdate),
                               path('<str:param>', views.ToAdmin),
+
+                              path('download_video/', views.download_video_view, name='download_video'),
+                              path('video_formats/', views.video_formats, name='video_formats'),
+                              path('get_folders/', views.get_folders, name='get_folders'),
+                              path('download_progress/', views.download_progress_view, name='download_progress'),
+
 
 
 ]

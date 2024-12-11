@@ -143,6 +143,47 @@ def FindAll(currentPage,itemsPerPage):
 
     return {'success': 'true', 'message': 'ok', 'total': len(objects), 'data': page_obj.object_list}
 
+def FindAllByNotPage():
+
+
+    folder_names = GetDataDirPath()
+    folder_path = dj_data_datas()
+    objects = []
+    print("folder_names",folder_names)
+    for f in folder_names:
+
+        myobj = load_object(folder_path + '/' + f + '/' + f + '.kk')
+
+        myobj = {'baseName':myobj.baseName,'rootName':myobj.rootName,'password':myobj.password,'time':os.path.getctime(folder_path + '/' + f + '/' + f + '.kk')}
+
+        objects.append(myobj)
+
+
+
+    array = []
+    sortedData = []
+    for ml in objects:
+        array.append(ml['time'])
+
+
+    sorted_array = sorted(set(array), reverse=True)
+
+
+    for sl in sorted_array:
+
+        for s2 in objects:
+
+            if sl == s2['time']:
+                sortedData.append(s2)
+
+
+    # paginator = Paginator(sortedData, itemsPerPage)
+    #
+    # page_obj = paginator.get_page(currentPage)
+
+    print('FindAllByNotPage:',sortedData)
+
+    return {'success': 'true', 'message': 'ok', 'total': len(objects), 'data': sortedData}
 
 def dj_data_datas():
     django_root = os.path.dirname(AuthLogin.get_project_root())
