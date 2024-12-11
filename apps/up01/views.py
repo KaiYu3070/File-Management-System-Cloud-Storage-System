@@ -365,15 +365,15 @@ def progress_hook(d):
             return '未知'
         seconds = int(seconds)
         if seconds < 60:
-            return f"{seconds} 秒"
+            return f"{seconds} second"
         elif seconds < 3600:
             minutes = seconds // 60
             seconds = seconds % 60
-            return f"{minutes} 分 {seconds} 秒"
+            return f"{minutes} minute {seconds} second"
         else:
             hours = seconds // 3600
             minutes = (seconds % 3600) // 60
-            return f"{hours} 小时 {minutes} 分"
+            return f"{hours} hour {minutes} minute"
 
     if d['status'] == 'downloading':
 
