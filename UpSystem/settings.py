@@ -48,7 +48,7 @@ MIDDLEWARE = [
     # 'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
-    # 页面套页面不显示问题 所以注释
+    
     # 'django.middleware.clickjacking.XFrameOptionsMiddleware',
     'middlewares.Md1.Md1'
 ]
@@ -129,12 +129,12 @@ STATIC_ROOT = os.path.join(BASE_DIR,'static')
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
-SESSION_ENGINE = 'django.contrib.sessions.backends.file'  # 引擎（默认）
+SESSION_ENGINE = 'django.contrib.sessions.backends.file'   
 SESSION_FILE_PATH = 'session_temp_file'
-SESSION_COOKIE_DOMAIN = None  # Session的cookie保存的域名（默认）
-SESSION_COOKIE_SECURE = False  # 是否Https传输cookie（默认）
-SESSION_COOKIE_HTTPONLY = True  # 是否Session的cookie只支持http传输（默认）
-SESSION_COOKIE_AGE = 1209600  # Session的cookie失效日期（2周）（默认）
-SESSION_EXPIRE_AT_BROWSER_CLOSE = False  # 是否关闭浏览器使得Session过期（默认）
+SESSION_COOKIE_DOMAIN = None   
+SESSION_COOKIE_SECURE = False   
+SESSION_COOKIE_HTTPONLY = True  
+SESSION_COOKIE_AGE = 1209600   
+SESSION_EXPIRE_AT_BROWSER_CLOSE = False   
 SESSION_SAVE_EVERY_REQUEST = False
 APPEND_SLASH= False
