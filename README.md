@@ -95,14 +95,11 @@ Here are some screenshots of the system in action:
 
 ![Image of Project](pics/4.png)
 *Dashboard showing file and folder management interface.*
-
+*File upload interface showing selected file for upload.*
+![Image of Project](pics/3.png)
+![Image of Project](pics/2.png)
 ![Image of Project](pics/1.png)
 
-*File upload interface showing selected file for upload.*
-
-![Image of Project](pics/3.png)
-
-![Image of Project](pics/2.png)
 
 *YouTube video download interface showing URL input and folder selection.*
 
