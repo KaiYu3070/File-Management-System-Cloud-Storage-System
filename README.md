@@ -93,7 +93,8 @@ You can select the video format and resolution before downloading. By default, *
 
 Here are some screenshots of the system in action:
 
-![Dashboard Screenshot](/pic/1.png)
+![Dashboard Screenshot](
+pic/1.png)
 *Dashboard showing file and folder management interface.*
 
 ![File Upload Screenshot](/pic/2.png)
