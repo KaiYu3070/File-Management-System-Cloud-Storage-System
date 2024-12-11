@@ -92,17 +92,15 @@ You can select the video format and resolution before downloading. By default, *
 ## Screenshots
 
 Here are some screenshots of the system in action:
-
-![Image of Project](pics/4.png)
 *Dashboard showing file and folder management interface.*
 *File upload interface showing selected file for upload.*
+![Image of Project](pics/4.png)
 ![Image of Project](pics/3.png)
 ![Image of Project](pics/2.png)
-![Image of Project](pics/1.png)
-
 
 *YouTube video download interface showing URL input and folder selection.*
 
+![Image of Project](pics/1.png)
 ## Technologies Used
 
 - **Django**: Web framework for building the backend of the system.
