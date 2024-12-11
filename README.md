@@ -93,14 +93,17 @@ You can select the video format and resolution before downloading. By default, *
 
 Here are some screenshots of the system in action:
 
-![Image of Project](pics/1.png)
+![Image of Project](pics/4.png)
 *Dashboard showing file and folder management interface.*
 
-![File Upload Screenshot](/pic/2.png)
+![Image of Project](pics/1.png)
+
 *File upload interface showing selected file for upload.*
 
-![YouTube Video Download Screenshot](/pic/3.png)
-![YouTube Video Download Screenshot](/pic/4.png)
+![Image of Project](pics/3.png)
+
+![Image of Project](pics/2.png)
+
 *YouTube video download interface showing URL input and folder selection.*
 
 ## Technologies Used
