@@ -209,6 +209,7 @@ button[disabled] {
     <div class="container">
         <h1>YouTube Downloader</h1>
         <input type="text" id="video-url" placeholder="Please enter the youtube video link">
+        <input type="text" id="video-url2" hidden placeholder="Please enter the youtube video link">
         <input type="file" id="cookies"   accept=".txt" > （ Upload the YouTube cookie file ）
         <br>
    <!-- File folder dropdown -->
@@ -240,10 +241,16 @@ button[disabled] {
     <script>
         document.getElementById('download-btn').onclick = function() {
             const url = document.getElementById('video-url').value;
+            var url2 = document.getElementById('video-url2').value;
+
             const cookies = document.getElementById('cookies').files[0];
             const formData = new FormData();
             const formatContainer = document.getElementById("format-container");
 
+            if (url2 ==='' || url2 != url){
+                   console.log("kirmidi!!!!")
+                   formatContainer.innerHTML = '';
+            }
 
             formData.append('url', url);
             if (cookies) {
@@ -266,6 +273,7 @@ button[disabled] {
     }
              if (formatContainer.children.length === 0) {
 
+                   document.getElementById('video-url2').value= url;
                    document.getElementById('download-btn').disabled = true;
                    const loadingSpinner = document.getElementById('loading-spinner');
                    loadingSpinner.style.display = 'block';
@@ -301,7 +309,7 @@ button[disabled] {
                     radioInput.type = "radio";
                     radioInput.id = `format${index + 1}`;
                     radioInput.name = "format";
-                    radioInput.value = format.format+"."+format.extension;
+                    radioInput.value = format.format+"."+format.extension+"."+format.format_id;
                     radioInput.classList.add("format-radio");
 
                     const label = document.createElement("label");
@@ -435,3 +443,6 @@ document.addEventListener('DOMContentLoaded', function() {
     </script>
 </body>
 </html>
+
+
+

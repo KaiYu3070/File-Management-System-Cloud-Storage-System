@@ -315,21 +315,49 @@ def download_video(url, cookiefile=None,format=None,folder=None):
         "error_message": ""
     }
 
-    resolution, extension = format.split('.')
-    resolution = resolution[:-1]
+    resolution, extension, format_id = format.split('.')
+    #resolution = resolution[:-1]
 
+    start_time = "00:00:00"  # 去掉逗号
+    end_time = "01:00:00"
     print(f'fpath:{folder}')
+    print(f'format_id:{format_id}')
     print(f'resolution:{resolution}')
     print(f'extension:{extension}')
     ydl_opts = {
 
-
-        'format': f'bestvideo[height={resolution}][ext={extension}]',
+        'format': format_id if format_id else 'best',  #
+        #'format': f'bestvideo[height={resolution}][ext={extension}][format_id={format_id}]',
+        # 'format': f'bestvideo[height={resolution}][ext={extension}]',
         'outtmpl': f'{folder}%(title)s_%(resolution)s.%(ext)s',
         'progress_hooks': [progress_hook],
-        'cookiefile': cookiefile,
+        # 'cookiefile': cookiefile,
+        'cookiefile': '/Users/kawsar/Downloads/cookies.txt',
+        # 'download_ranges': [(start_time, end_time)]  # 确保时间段是列表格式
+
 
     }
+
+    ydl_opts2 = {
+
+        'format': 'bestaudio',  #
+
+        'outtmpl': f'{folder}%(title)s_%(resolution)s.%(ext)s',
+        'progress_hooks': [progress_hook],
+        # 'cookiefile': cookiefile,
+        'cookiefile': '/Users/kawsar/Downloads/cookies.txt',
+        'noplaylist': True,
+        'quiet': True,
+        'postprocessors': [{
+            'key': 'FFmpegExtractAudio',
+            'preferredcodec': 'mp3',
+            'preferredquality': '192',
+        }],
+
+    }
+
+
+
 
     if cookiefile:
         ydl_opts['cookiefile'] = cookiefile
@@ -339,7 +367,21 @@ def download_video(url, cookiefile=None,format=None,folder=None):
             ydl.download([url])
             download_progress["complete"] = True
 
-            print('下载成功了 .....')
+            print('视频下载成功了 .....')
+
+
+        except Exception as e:
+            download_progress["complete"] = True
+            download_progress["error"] = True
+            download_progress["error_message"] = str(e)
+            print(f"download fail: {e}")
+
+    with yt_dlp.YoutubeDL(ydl_opts2) as ydl:
+        try:
+            ydl.download([url])
+            download_progress["complete"] = True
+
+            print('音频下载成功了 .....')
 
 
         except Exception as e:
@@ -351,77 +393,153 @@ def download_video(url, cookiefile=None,format=None,folder=None):
 def progress_hook(d):
     global download_progress
 
-
     def format_bytes(size):
-        for unit in ['B', 'KB', 'MB', 'GB']:
-            if size < 1024.0:
-                return f"{size:.2f} {unit}"
-            size /= 1024.0
-        return f"{size:.2f} TB"
-
+        if size is None:
+            return "0 B"
+        try:
+            for unit in ['B', 'KB', 'MB', 'GB', 'TB']:
+                if size < 1024.0:
+                    return f"{size:.2f} {unit}"
+                size /= 1024.0
+            return f"{size:.2f} PB"
+        except TypeError:
+            return "0 B"
 
     def format_eta(seconds):
         if seconds is None or seconds <= 0:
             return '未知'
         seconds = int(seconds)
         if seconds < 60:
-            return f"{seconds} second"
+            return f"{seconds} 秒"
         elif seconds < 3600:
             minutes = seconds // 60
             seconds = seconds % 60
-            return f"{minutes} minute {seconds} second"
+            return f"{minutes} 分钟 {seconds} 秒"
         else:
             hours = seconds // 3600
             minutes = (seconds % 3600) // 60
-            return f"{hours} hour {minutes} minute"
+            return f"{hours} 小时 {minutes} 分钟"
 
     if d['status'] == 'downloading':
+        percent_str = d.get('_percent_str', '0.00%')
+        try:
+            download_progress["percent"] = float(percent_str.replace('%', ''))
+        except (ValueError, AttributeError):
+            download_progress["percent"] = 0.0
 
-        download_progress["percent"] = float(d.get('_percent_str', '0.00%').replace('%', ''))
+        downloaded_bytes = d.get('downloaded_bytes') or 0
+        total_bytes = d.get('total_bytes') or d.get('total_bytes_estimate') or 0
 
+        speed = d.get('speed') or 0
 
-        downloaded_bytes = d.get('downloaded_bytes', 0)
-        total_bytes = d.get('total_bytes', d.get('total_bytes_estimate', 0))
-
-
-        speed = d.get('speed', 0)
-
-
-        if total_bytes and total_bytes > 0 and downloaded_bytes and downloaded_bytes >= 0:
+        if total_bytes > 0 and downloaded_bytes >= 0:
             remaining_bytes = total_bytes - downloaded_bytes
         else:
             remaining_bytes = 0
 
-
-        if speed and speed > 0:
+        if speed > 0:
             eta_seconds = remaining_bytes / speed
         else:
             eta_seconds = None
 
-
         download_progress["eta"] = format_eta(eta_seconds)
 
-
         downloaded_size = format_bytes(downloaded_bytes)
-        total_size = format_bytes(total_bytes) if total_bytes > 0 else 'none'
-        speed_formatted = format_bytes(speed)
+        total_size = format_bytes(total_bytes) if total_bytes > 0 else '未知'
+        speed_formatted = format_bytes(speed) + '/s' if speed > 0 else '未知'
+
         download_progress["pers"] = speed_formatted
         download_progress["total"] = total_size
 
-
         print(
-            f"downloading: {download_progress['percent']}% ({downloaded_size} / {total_size}), ETA: {download_progress['eta']}")
-
-
-
+            f"downloading: {download_progress['percent']}% ({downloaded_size} / {total_size}), ETA: {download_progress['eta']}"
+        )
 
     elif d['status'] == 'finished':
         download_progress["downloading"] = False
         download_progress["merging"] = True
+        print('下载完成，正在合并文件...')
 
     elif d['status'] == 'error':
         download_progress["error"] = True
-        download_progress["error_message"] = d.get('error', 'none')
+        download_progress["error_message"] = d.get('error', '未知错误')
+        print(f"下载失败: {download_progress['error_message']}")
+
+
+# def progress_hook(d):
+#     global download_progress
+#
+#
+#     def format_bytes(size):
+#         for unit in ['B', 'KB', 'MB', 'GB']:
+#             if size < 1024.0:
+#                 return f"{size:.2f} {unit}"
+#             size /= 1024.0
+#         return f"{size:.2f} TB"
+#
+#
+#     def format_eta(seconds):
+#         if seconds is None or seconds <= 0:
+#             return '未知'
+#         seconds = int(seconds)
+#         if seconds < 60:
+#             return f"{seconds} second"
+#         elif seconds < 3600:
+#             minutes = seconds // 60
+#             seconds = seconds % 60
+#             return f"{minutes} minute {seconds} second"
+#         else:
+#             hours = seconds // 3600
+#             minutes = (seconds % 3600) // 60
+#             return f"{hours} hour {minutes} minute"
+#
+#     if d['status'] == 'downloading':
+#
+#         download_progress["percent"] = float(d.get('_percent_str', '0.00%').replace('%', ''))
+#
+#
+#         downloaded_bytes = d.get('downloaded_bytes', 0)
+#         total_bytes = d.get('total_bytes', d.get('total_bytes_estimate', 0))
+#
+#
+#         speed = d.get('speed', 0)
+#
+#
+#         if total_bytes and total_bytes > 0 and downloaded_bytes and downloaded_bytes >= 0:
+#             remaining_bytes = total_bytes - downloaded_bytes
+#         else:
+#             remaining_bytes = 0
+#
+#
+#         if speed and speed > 0:
+#             eta_seconds = remaining_bytes / speed
+#         else:
+#             eta_seconds = None
+#
+#
+#         download_progress["eta"] = format_eta(eta_seconds)
+#
+#
+#         downloaded_size = format_bytes(downloaded_bytes)
+#         total_size = format_bytes(total_bytes) if total_bytes > 0 else 'none'
+#         speed_formatted = format_bytes(speed)
+#         download_progress["pers"] = speed_formatted
+#         download_progress["total"] = total_size
+#
+#
+#         print(
+#             f"downloading: {download_progress['percent']}% ({downloaded_size} / {total_size}), ETA: {download_progress['eta']}")
+#
+#
+#
+#
+#     elif d['status'] == 'finished':
+#         download_progress["downloading"] = False
+#         download_progress["merging"] = True
+#
+#     elif d['status'] == 'error':
+#         download_progress["error"] = True
+#         download_progress["error_message"] = d.get('error', 'none')
 
 
 
@@ -527,8 +645,13 @@ def format_filesize(filesize):
 
 
 def check_formats(url):
+    options = {
+        'cookiefile': '/Users/kawsar/Downloads/cookies.txt',
+        'quiet': True,  # 禁用多余输出
+        'noplaylist': True,  # 只处理单个视频，不处理播放列表
+    }
 
-    with yt_dlp.YoutubeDL() as ydl:
+    with yt_dlp.YoutubeDL(options) as ydl:
         try:
             # Extract information about the video
             info_dict = ydl.extract_info(url, download=False)
@@ -546,7 +669,7 @@ def check_formats(url):
                 if fmt.get('filesize', 'Unknown') == 'Unknown' or any(x in fmt.get('format_note', '').lower() for x in ['ultralow','low','drc','medium','low, drc']):
                     continue
 
-
+                print(f" formats: {fmt}")
                 if fmt.get('ext') not in ['mp4', 'webm']:
                     continue
 
@@ -560,6 +683,7 @@ def check_formats(url):
                     formatted_filesize = format_filesize(fmt.get('filesize', 'Unknown'))
 
                     format_info = {
+                        'format_id': fmt.get('format_id', 'Unknown'),
                         'format': fmt.get('format_note', 'Unknown'),
                         'extension': fmt.get('ext', 'Unknown'),
                         'filesize': formatted_filesize,
